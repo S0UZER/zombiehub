@@ -1,28 +1,25 @@
 class Interface
 {
-   field string welcomeMessage1, welcomeMessage2, welcomeMessage3, welcomeMessage4;
+   field string welcomeMessage1, welcomeMessage2, welcomeMessage3;
    field string scoreMessage;
    field string finalMessage1, finalMessage2, finalMessage3;
-   field string easyLevelMessage, mediumLevelMessage, hardLevelMessage;
+   field string weakLevelMessage, proLevelMessage;
    field Array difficultyMessages;
 
    field int difficultyPointerX;
    field Array difficultyPointerYPositions;
 
-   field int currentDifficulty; // 0 - easy, 1 - medium, 2 - hard
-   
+   field int currentDifficulty; // 0 - weak, 1 - professional
    
    constructor Interface new()
    {
       // initialize strings
-      let welcomeMessage1 = "Controls: up / down arrows";
-      let welcomeMessage2 = "Press the space to shoot";
-      let welcomeMessage3 = "Press esc to exit the current race";
-      let welcomeMessage4 = "Choose the level of difficulty:";
+      let welcomeMessage1 = "Controls: up / down arrows ";
+      let welcomeMessage2 = "Press esc to exit the current race";
+      let welcomeMessage3 = "Choose your challenge:";
 
-      let easyLevelMessage = "Easy";
-      let mediumLevelMessage = "Medium";
-      let hardLevelMessage = "Hard";
+      let weakLevelMessage = "For weak people";
+      let proLevelMessage = "For professional";
 
       let scoreMessage = "score: ";
 
@@ -30,18 +27,15 @@ class Interface
       let finalMessage2 = "Your game score: ";
       let finalMessage3 = "Press enter to continue";
 
-      let difficultyMessages = Array.new(3);
-      let difficultyMessages[0] = "easy / ";
-      let difficultyMessages[1] = "medium / ";
-      let difficultyMessages[2] = "hard / ";
-
+      let difficultyMessages = Array.new(2);
+      let difficultyMessages[0] = "for weak people / ";
+      let difficultyMessages[1] = "for professional / ";
 
       // initialize cursor positions
       let difficultyPointerX = 200; 
-      let difficultyPointerYPositions = Array.new(3);
-      let difficultyPointerYPositions[0] = 135;
-      let difficultyPointerYPositions[1] = 145;
-      let difficultyPointerYPositions[2] = 155;
+      let difficultyPointerYPositions = Array.new(2);
+      let difficultyPointerYPositions[0] = 140;
+      let difficultyPointerYPositions[1] = 150;
 
       let currentDifficulty = 0;
 
@@ -55,21 +49,17 @@ class Interface
 
    method void drawWelcomeWindow()
    {
-      do Output.moveCursor(8, 16);  // Первая строка
+      do Output.moveCursor(9, 16);
       do Output.printString(welcomeMessage1);
-      do Output.moveCursor(9, 16);  // Вторая строка
+      do Output.moveCursor(10, 16);
       do Output.printString(welcomeMessage2);
-      do Output.moveCursor(10, 16); // Третья строка
+      do Output.moveCursor(11, 16);
       do Output.printString(welcomeMessage3);
-      do Output.moveCursor(11, 16); // Четвертая строка
-      do Output.printString(welcomeMessage4);
 
-      do Output.moveCursor(13, 28); // Пятая строка (с отступом)
-      do Output.printString(easyLevelMessage);
-      do Output.moveCursor(14, 28);
-      do Output.printString(mediumLevelMessage);
-      do Output.moveCursor(15, 28);
-      do Output.printString(hardLevelMessage);
+      do Output.moveCursor(12, 28);
+      do Output.printString(weakLevelMessage);
+      do Output.moveCursor(13, 28);
+      do Output.printString(proLevelMessage);
 
       do drawDifficultyPointer();
 
@@ -112,9 +102,19 @@ class Interface
 
    method void moveDifficultyPointer(int delta)
    {
-      let currentDifficulty = Utils.mod(currentDifficulty + delta, 3);
+      let currentDifficulty = Utils.mod(currentDifficulty + delta, 2);
 
       return;
+   }
+
+   method int getGameSpeed()
+   {
+      if (currentDifficulty = 0) {
+         return 5; // Speed for weak people
+      }
+      else {
+         return 10; // Speed for professionals
+      }
    }
 
    method void dispose()
@@ -122,7 +122,6 @@ class Interface
       do Memory.deAlloc(welcomeMessage1);
       do Memory.deAlloc(welcomeMessage2);
       do Memory.deAlloc(welcomeMessage3);
-      do Memory.deAlloc(welcomeMessage4);
 
       do Memory.deAlloc(scoreMessage);
 
@@ -130,9 +129,8 @@ class Interface
       do Memory.deAlloc(finalMessage2);
       do Memory.deAlloc(finalMessage3);
 
-      do Memory.deAlloc(easyLevelMessage);
-      do Memory.deAlloc(mediumLevelMessage);
-      do Memory.deAlloc(hardLevelMessage);
+      do Memory.deAlloc(weakLevelMessage);
+      do Memory.deAlloc(proLevelMessage);
 
       do Memory.deAlloc(difficultyPointerYPositions);
 
