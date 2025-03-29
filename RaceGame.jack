@@ -3,7 +3,7 @@ class RaceGame
    field boolean isRunning;
 
    field int enemiesCount, enemySpawnRate;
-   field int score, roadSpeed, enemiesSpeed, enemiesAcceleration;
+   field int score, roadSpeed, enemiesSpeed, enemiesAcceleration, k;
 
    field PlayerCar player;
    field Array enemies;
@@ -41,6 +41,7 @@ class RaceGame
       let enemySpawnYCoords[2] = 144;
       let enemySpawnYCoords[3] = 208;
       let score = 0;
+      let k = 0;
 
       return this;
    }
@@ -60,7 +61,7 @@ class RaceGame
       do handleGameProcess();
 
       do Screen.clearScreen();
-      do interface.drawFinalWindow(score);
+      do interface.drawFinalWindow(score, k);
       do handleEndGame();
 
       return;
@@ -241,10 +242,14 @@ method int handleCarsDeaths()
                   do currentEnemy.die(); 
                }
             }
-            
-            if (score = -20)
+            if (score = 1)
+            {
+                let isRunning = false;
+            }
+            if (score = -2)
             {
                let isRunning = false; // игра заканчивается когда счёт -20
+               let k = 1;
             }
         }
         
