@@ -1,6 +1,6 @@
 class Interface
 {
-   field string welcomeMessage1, welcomeMessage2, welcomeMessage3;
+   field string welcomeMessage1, welcomeMessage2, welcomeMessage3, welcomeMessage4;
    field string scoreMessage;
    field string finalMessage1, finalMessage2, finalMessage3;
    field string easyLevelMessage, mediumLevelMessage, hardLevelMessage;
@@ -15,9 +15,10 @@ class Interface
    constructor Interface new()
    {
       // initialize strings
-      let welcomeMessage1 = "Controls: up / down arrows ";
-      let welcomeMessage2 = "Press esc to exit the current race";
-      let welcomeMessage3 = "Choose the level of difficulty:";
+      let welcomeMessage1 = "Controls: up / down arrows";
+      let welcomeMessage2 = "Press the space to shoot";
+      let welcomeMessage3 = "Press esc to exit the current race";
+      let welcomeMessage4 = "Choose the level of difficulty:";
 
       let easyLevelMessage = "Easy";
       let mediumLevelMessage = "Medium";
@@ -54,25 +55,26 @@ class Interface
 
    method void drawWelcomeWindow()
    {
-      do Output.moveCursor(9, 16);
+      do Output.moveCursor(8, 16);  // Первая строка
       do Output.printString(welcomeMessage1);
-      do Output.moveCursor(10, 16);
+      do Output.moveCursor(9, 16);  // Вторая строка
       do Output.printString(welcomeMessage2);
-      do Output.moveCursor(11, 16);
+      do Output.moveCursor(10, 16); // Третья строка
       do Output.printString(welcomeMessage3);
+      do Output.moveCursor(11, 16); // Четвертая строка
+      do Output.printString(welcomeMessage4);
 
-      do Output.moveCursor(12, 28);
+      do Output.moveCursor(13, 28); // Пятая строка (с отступом)
       do Output.printString(easyLevelMessage);
-      do Output.moveCursor(13, 28);
-      do Output.printString(mediumLevelMessage);
       do Output.moveCursor(14, 28);
+      do Output.printString(mediumLevelMessage);
+      do Output.moveCursor(15, 28);
       do Output.printString(hardLevelMessage);
 
       do drawDifficultyPointer();
 
       return;
    }
-
 
    method void drawDifficultyPointer()
    {
@@ -84,7 +86,6 @@ class Interface
 
       return;
    }
-
 
    method void drawPlayerScore(int score)
    {
@@ -121,6 +122,7 @@ class Interface
       do Memory.deAlloc(welcomeMessage1);
       do Memory.deAlloc(welcomeMessage2);
       do Memory.deAlloc(welcomeMessage3);
+      do Memory.deAlloc(welcomeMessage4);
 
       do Memory.deAlloc(scoreMessage);
 
