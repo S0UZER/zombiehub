@@ -1,0 +1,91 @@
+class PlayerCar 
+{
+   field int x, y;
+   field int xSize, ySize;
+   field int crossX, crossY;  // Позиция крестика
+   field int crossSize;       // Размер крестика
+   
+   constructor PlayerCar new(int Ax, int Ay)
+   {
+      let x = Ax;
+      let y = Ay; 
+      
+      let xSize = 10;
+      let ySize = 20;
+      
+      // Инициализация крестика
+      let crossX = 420 - 50;  // Смещение на 50 пикселей влево от игрока
+      let crossY = y + 10;     // Центр по вертикали относительно игрока
+      let crossSize = 4;       // Размер крестика
+
+      return this;
+   }
+
+   method int GetX()
+   {
+      return 16 * x;
+   }
+
+   method int GetY()
+   {
+      return y;
+   }
+
+   method void dispose()
+   {
+      do Memory.deAlloc(this);
+      return;
+   }
+
+   // Метод для отрисовки крестика
+   method void drawCross()
+   {
+      // Вертикальная линия крестика
+      do Utils.drawRectangleByOffset(crossX - 2, crossY - 2, crossX + 2, crossY + 2, 0, 0);
+      // Горизонтальная линия крестика
+      do Utils.drawRectangleByOffset(crossX - 4, crossY, crossX + 4, crossY, 0, 0);
+      
+      return;
+   }
+
+   method void draw()
+   {
+      // Обновляем позицию крестика относительно игрока
+      let crossY = y + 10;
+      
+      // Рисуем крестик
+      do drawCross();
+      
+      // Рисуем человечка
+      // Голова
+      do Utils.drawRectangleByOffset(420 + 3, y, 420 + 7, y + 4, 0, 0);
+      
+      // Тело
+      do Utils.drawRectangleByOffset(420 + 2, y + 5, 420 + 8, y + 12, 0, 0);
+      
+      // Руки
+      do Utils.drawRectangleByOffset(420, y + 5, 420 + 2, y + 10, 0, 0);
+      do Utils.drawRectangleByOffset(420 + 8, y + 5, 420 + 10, y + 10, 0, 0);
+      
+      // Ноги
+      do Utils.drawRectangleByOffset(420 + 3, y + 13, 420 + 5, y + 20, 0, 0);
+      do Utils.drawRectangleByOffset(420 + 5, y + 13, 420 + 7, y + 20, 0, 0);
+
+      return;
+   }
+
+   method void move(int dx, int dy)
+   {
+      if ((1 < (x + dx)) & ((x + dx + xSize) < 511))
+      {
+         let x = x + dx;
+      }
+
+      if ((0 < (y+dy)) & ((y + dy + ySize) < 255))
+      {
+         let y = y + dy;
+      }
+
+      return;
+   }
+}

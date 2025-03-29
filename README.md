@@ -1,2 +1,4 @@
 # zombiehub
-One of the most popular game in the world! Yura and Dima_b1t
+# One of the most popular game in the world! Yura and Dima_b1t
+# ВСЕМ ПРИВЕТ, МЫ РАДЫ ВАС ПРИВЕТСТВОВАТЬ НА НЕШЕМ ПРОЕКТЕ! НАДЕЮСЬ, ОН ВАМ ПОНРАВИТСЯ! WW
+# ЗАГАДКА: ТИХО СЗАДИ ПОДОШЁЛ, 2 РАЗА ВСУНУЛ И ПОШЁЛ. ЧТО ЭТО? ЖДУ ПРАВИЛЬНЫЙ ОТВЕТ В ТЕЛЕГРАМ @b1tuha. ПОБЕДИТЕЛЬ(ПЕРВЫЙ) ПОЛУЧИТ МОРОЖЕНКУ.

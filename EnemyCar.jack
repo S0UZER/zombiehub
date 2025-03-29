@@ -1,0 +1,80 @@
+class EnemyCar 
+{
+   field int x, y;
+   field int xSize, ySize;
+   field boolean alive;
+   
+   constructor EnemyCar new(int Ax, int Ay)
+   {
+      let xSize = 48;
+      let ySize = 2;
+      do reborn(Ax, Ay);
+      return this;
+   }
+
+   method boolean onScreen()
+   {
+      return (((1 < x) & ((x + xSize) < 508)) & ((1 < y) & ((y + ySize) < 255)));
+   }
+   
+   method int GetX()
+   {
+      return x;
+   }
+
+   method int GetY()
+   {
+      return y;
+   }
+
+   method boolean isAlive()
+   {
+      return alive;
+   }
+
+   method void reborn(int Ax, int Ay)
+   {
+      let alive = true;
+      let x = Ax;
+      let y = Ay;
+      return;
+   }
+
+   method void die()
+   {
+      let x = 0;
+      let y = 0;
+      let alive = false;
+      return;
+   }
+
+   method void dispose()
+   {
+      do Memory.deAlloc(this);
+      return;
+   }
+
+   method void draw()
+   {
+      // Голова
+      do Utils.drawRectangleByOffset(0, 0, 10, 10, x, y);
+      // Тело
+      do Utils.drawRectangleByOffset(2, 10, 8, 20, x, y);
+      // Левая нога
+      do Utils.drawRectangleByOffset(0, 20, 4, 30, x, y);
+      // Правая нога
+      do Utils.drawRectangleByOffset(6, 20, 10, 30, x, y);
+      // Левая рука
+      do Utils.drawRectangleByOffset(-4, 10, 0, 18, x, y);
+      // Правая рука
+      do Utils.drawRectangleByOffset(10, 10, 14, 18, x, y);
+      return;
+   }
+
+   method void move(int dx, int dy)
+   {
+      let y = y + dy;
+      let x = x + dx;
+      return;
+   }
+}

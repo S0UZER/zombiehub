@@ -1,0 +1,363 @@
+class RaceGame
+{
+   field boolean isRunning;
+
+   field int enemiesCount, enemySpawnRate;
+   field int score, roadSpeed, enemiesSpeed, enemiesAcceleration;
+
+   field PlayerCar player;
+   field Array enemies;
+   field Array enemySpawnYCoords;
+   field Road road;           
+   field Random random;     
+   field Interface interface;
+   
+
+   constructor RaceGame new()
+   {
+      var EnemyCar currentEnemy;
+      var int i;
+
+      let interface = Interface.new();
+      let player = PlayerCar.new(26, 96);
+
+      let enemiesCount = 16;
+      let enemiesSpeed = 5;
+      let enemies = Array.new(enemiesCount);
+      let i = 0;
+      while (i < enemiesCount)
+      {
+         let enemies[i] = EnemyCar.new(16, 16);
+         let currentEnemy = enemies[i];
+         do currentEnemy.die();
+
+         let i = i + 1;
+      }
+      let road = Road.new();
+      let roadSpeed = 5;
+      let enemySpawnYCoords = Array.new(4);
+      let enemySpawnYCoords[0] = 16;
+      let enemySpawnYCoords[1] = 80;
+      let enemySpawnYCoords[2] = 144;
+      let enemySpawnYCoords[3] = 208;
+      let score = 0;
+
+      return this;
+   }
+
+   
+   method void run()
+   {
+      var int randomSeed;
+      var char key;
+
+      let randomSeed = handleStartGame();
+      let random = Random.new(randomSeed);
+
+      let enemiesAcceleration = interface.getDifficulty() + 1;
+      let enemySpawnRate = 15 - interface.getDifficulty();
+
+      do handleGameProcess();
+
+      do Screen.clearScreen();
+      do interface.drawFinalWindow(score);
+      do handleEndGame();
+
+      return;
+   }
+
+   method void handleGameProcess() {
+   // Основной игровой цикл, обрабатывает ввод, логику и отрисовку.
+
+   var char key;              // Переменная для хранения кода нажатой клавиши.
+   var int tick, frame, deadCarsCount; // Переменные для управления временем, кадрами и подсчетом уничтоженных врагов.
+
+   let isRunning = true;     // Флаг, определяющий, продолжается ли игра.
+   let tick = 0;            // Счетчик игровых тиков (небольшие интервалы времени).
+   let frame = 0;           // Счетчик кадров (более крупные интервалы, связанные с отрисовкой).
+
+   while (isRunning) {
+      // Основной цикл игры: выполняется, пока `isRunning` не станет `false`.
+
+      let key = Keyboard.keyPressed(); // Получаем код нажатой клавиши. 0, если никакая клавиша не нажата.
+
+      if (tick = 4000) {
+         // Этот блок выполняется каждые 4000 тиков. Определяет "скорость" игрового цикла.
+         // Чем больше значение, тем медленнее игра.
+
+         if (key = 140) { let isRunning = false; }  // esc key - Если нажата клавиша ESC (код 140), завершаем игру.
+         if (key = 131) { do player.move(0, -15); }  // up arrow - Если нажата стрелка вверх (код 131), двигаем игрока вверх.
+         if (key = 133) { do player.move(0, 15); }  // down arrow   - Если нажата стрелка вниз (код 133), двигаем игрока вниз.
+         //if (key = 130) {do Screen.drawLine(100, 100, 100, 130);} //Закомментированная отрисовка линии.
+         //if (key = 129) {do Utils.drawRectangleByOffset(30, 100, 100, 130, 0, 0);} //Закомментированная отрисовка прямоугольника.
+
+         do moveEnemies();          // Перемещаем врагов (вызываем метод, определяющий их движение).
+         do road.moveMarking(roadSpeed); // Двигаем дорожную разметку (эффект движения дороги).
+
+         let deadCarsCount = handleCarsDeaths();  // Определяем количество уничтоженных врагов.
+         let score = score + deadCarsCount;       // Увеличиваем счет игрока на количество уничтоженных врагов.
+         do handleSpeedIncreasing(deadCarsCount);  // Обрабатываем увеличение скорости игры.
+
+         do drawFrame();           // Отрисовываем текущий кадр игры (вызываем метод отрисовки).
+
+         let tick = 0;            // Сбрасываем счетчик тиков.
+         let frame = frame + 1;         // Увеличиваем счетчик кадров.
+      }
+
+      if (frame = enemySpawnRate) {
+         // Этот блок выполняется каждые `enemySpawnRate` кадров.
+         // Определяет частоту появления новых врагов.
+
+         do trySpawnEnemy();         // Пытаемся создать нового врага.
+
+         let frame = 0;            // Сбрасываем счетчик кадров.
+      }
+
+      let tick = tick + 1;          // Увеличиваем счетчик тиков.
+   }
+
+   return; // Завершаем метод (игра закончена).
+}
+
+method void handleSpeedIncreasing(int deadCarsCount) {
+   // Метод, обрабатывающий увеличение скорости игры в зависимости от счета игрока.
+
+   if (deadCarsCount > 0) {
+      // Если уничтожено хотя бы одно вражеское авто.
+
+      if ((Utils.mod(score, 5) = 0) & (score > 0)) {
+         // Если счет игрока кратен 5 И счет больше нуля.
+         //`Utils.mod(score, 5) = 0` -  Вычисляет остаток от деления score на 5. Если остаток равен 0, значит score кратен 5.
+
+         let roadSpeed = roadSpeed + enemiesAcceleration; // Увеличиваем скорость дорожной разметки.
+         let enemiesSpeed = enemiesSpeed + enemiesAcceleration; // Увеличиваем скорость движения врагов.
+      }
+   }
+
+   return; // Завершаем метод.
+}
+
+   // Обрабатывает начальный экран игры и выбор сложности
+method int handleStartGame()
+{
+    var char key;
+    // Ждем нажатия клавиши и рисуем стартовое окно
+    let key = Keyboard.keyPressed();
+    do interface.drawWelcomeWindow();
+    // Переходим к выбору сложности
+    return handleDifficultyChoosing(key);
+}
+
+// Обрабатывает выбор сложности игроком
+method int handleDifficultyChoosing(char key)
+{
+    var int randomSeed;
+    
+    // Цикл до нажатия Enter (код 128)
+    while (~(key = 128))
+    {
+        let key = Keyboard.keyPressed();
+        // Обновляем seed для случайных чисел
+        let randomSeed = Utils.mod(randomSeed + 1, 32767);
+        
+        // Обработка стрелок вверх/вниз (131/133)
+        if ((key = 131) | (key = 133))
+        {
+            do handleChangingDifficulty(key);
+        }
+    }
+    // Возвращаем seed для генератора случайных чисел
+    return randomSeed;
+}
+
+// Изменяет выбранную сложность игры
+method void handleChangingDifficulty(char key)
+{
+    do Screen.clearScreen();
+    
+    // Стрелка вверх - уменьшаем сложность
+    if (key = 131) { do interface.moveDifficultyPointer(-1); }
+    // Стрелка вниз - увеличиваем сложность
+    if (key = 133) { do interface.moveDifficultyPointer(1); }
+    
+    // Перерисовываем интерфейс и делаем паузу
+    do interface.drawWelcomeWindow();
+    do Sys.wait(200);
+    
+    return;
+}
+
+// Ожидает нажатия Enter после окончания игры
+method void handleEndGame()
+{
+    while (~(Keyboard.keyPressed() = 128)) { }
+    return;
+}
+
+// Отрисовывает игровой кадр
+method void drawFrame()
+{
+    do Screen.clearScreen();
+    do road.drawMarking();          // Рисуем дорожную разметку
+    do player.draw();               // Рисуем игрока
+    do drawEnemies();               // Рисуем врагов
+    do interface.drawPlayerScore(score); // Отображаем счет
+    
+    return;
+}
+
+// Обрабатывает "смерть" машин (выход за экран или столкновение)
+method int handleCarsDeaths()
+{
+    var EnemyCar currentEnemy;
+    var int i, deadCarsCount;
+    
+    let i = 0;
+    while (i < enemiesCount)
+    {
+        let currentEnemy = enemies[i];
+        
+        if (currentEnemy.isAlive())
+        {
+            // Если машина уехала за экран
+            if (~(currentEnemy.onScreen()))
+            {
+                let deadCarsCount = deadCarsCount - 1;
+                do currentEnemy.die(); // Помечаем как "мертвую"
+            }
+            
+            // Проверка столкновения с игроком
+            if (conflictHappened(currentEnemy.GetX(), currentEnemy.GetY(), player.GetX(), player.GetY()) )
+            {
+               if (~(Keyboard.keyPressed() = 32))
+               {
+                  let deadCarsCount = deadCarsCount - 1;
+                  do currentEnemy.die();  // Уничтожаем врага только если пробел НЕ нажат
+               }
+               else
+               {
+                  // Если пробел нажат - убийство
+                  let deadCarsCount = deadCarsCount + 1;
+                  do currentEnemy.die(); 
+               }
+            }
+            
+            if (score = -20)
+            {
+               let isRunning = false; // игра заканчивается когда счёт -20
+            }
+        }
+        
+        let i = i + 1;
+    }
+    
+    return deadCarsCount; // Возвращаем количество "умерших" машин
+}
+
+// Двигает все активные вражеские машины
+method void moveEnemies()
+{
+    var EnemyCar currentEnemy;
+    var int i;
+    
+    let i = 0;
+    while (i < enemiesCount)
+    {
+        let currentEnemy = enemies[i];
+        
+        if (currentEnemy.isAlive())
+        {
+            do currentEnemy.move(enemiesSpeed, 0); // Двигаем с текущей скоростью
+        }
+        
+        let i = i + 1;
+    }
+    
+    return;
+}
+
+// Отрисовывает всех активных врагов
+method void drawEnemies()
+{
+    var EnemyCar currentEnemy;
+    var int i;
+    
+    let i = 0;
+    while (i < enemiesCount)
+    {
+        let currentEnemy = enemies[i];
+        
+        if (currentEnemy.isAlive())
+        {
+            do currentEnemy.draw(); // Рисуем живых врагов
+        }
+        
+        let i = i + 1;
+    }
+    
+    return;
+}
+
+// Пытается создать нового врага в случайной полосе
+method void trySpawnEnemy()
+{
+    var EnemyCar newEnemy, currentEnemy;
+    var int case, i;
+    
+    // Случайно выбираем полосу (0-4)
+    let case = random.next(5);
+    if (case < 4) // 80% вероятность появления врага
+    {
+        // Ищем первую "мертвую" машину в пуле
+        let i = 0;
+        let currentEnemy = enemies[i];
+        while ((i < (enemiesCount-1)) & (currentEnemy.isAlive()))
+        {
+            let i = i + 1;
+            let currentEnemy = enemies[i];
+        }
+        
+        // Если нашли неактивную машину - "оживляем" ее
+        if (~(currentEnemy.isAlive()))
+        {
+            do currentEnemy.reborn(0, enemySpawnYCoords[case]);
+        }
+    }
+    
+    return;
+}
+
+   method boolean conflictHappened(int xEnemy, int yEnemy, int xPlayer, int yPlayer)
+   {
+      var int leftEnemyX, topLeftEnemyY, bottomLeftEnemyY;
+      var int rightPlayerX, topRightPlayerY, bottomRightPlayerY;
+
+      var boolean isConflictFromBelow, isConflictFromAbove;
+
+      let leftEnemyX = xEnemy + 47;
+      let topLeftEnemyY = yEnemy;
+      let bottomLeftEnemyY = yEnemy + 31;
+
+      let rightPlayerX = xPlayer;
+      let topRightPlayerY = yPlayer;
+      let bottomRightPlayerY = yPlayer + 31;
+
+      let isConflictFromBelow = (~(topRightPlayerY > bottomLeftEnemyY)) & (~(topRightPlayerY < topLeftEnemyY)) & (~(rightPlayerX > leftEnemyX));
+      let isConflictFromAbove = (~(bottomRightPlayerY > bottomLeftEnemyY)) & (~(bottomRightPlayerY < topLeftEnemyY)) & (~(rightPlayerX > leftEnemyX));
+
+      return isConflictFromBelow | isConflictFromAbove;
+   }
+   
+   method void dispose()
+   {
+      do player.dispose();
+      do Memory.deAlloc(enemies);
+      do Memory.deAlloc(enemySpawnYCoords);
+      do road.dispose();
+      do random.dispose();
+      do interface.dispose();
+      do Memory.deAlloc(this);
+      
+      return;
+   }
+}
