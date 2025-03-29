@@ -14,7 +14,7 @@ class Interface
    constructor Interface new()
    {
       // initialize strings
-      let welcomeMessage1 = "Controls: up / down arrows ";
+      let welcomeMessage1 = "Controls: up / down arrows , press space to shoot";
       let welcomeMessage2 = "Press esc to exit the current race";
       let welcomeMessage3 = "Choose your challenge:";
 
