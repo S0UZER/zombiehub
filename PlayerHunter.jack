@@ -1,11 +1,11 @@
-class PlayerCar 
+class PlayerHunter 
 {
    field int x, y;
    field int xSize, ySize;
    field int crossX, crossY;  // Позиция крестика
    field int crossSize;       // Размер крестика
    
-   constructor PlayerCar new(int Ax, int Ay)
+   constructor PlayerHunter new(int Ax, int Ay)
    {
       let x = Ax;
       let y = Ay; 

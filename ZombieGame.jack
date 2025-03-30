@@ -1,0 +1,327 @@
+class ZombieGame
+{
+   field boolean isRunning;
+
+   field int enemiesCount, enemySpawnRate;
+   field int score, roadSpeed, enemiesSpeed, enemiesAcceleration, k;
+
+   field PlayerHunter player;
+   field Array enemies;
+   field Array enemySpawnYCoords;
+   field Road road;           
+   field Random random;     
+   field Interface interface;
+   
+   constructor ZombieGame new()
+   {
+      var EnemyZombie currentEnemy;
+      var int i;
+
+      let interface = Interface.new();
+      let player = PlayerHunter.new(26, 96);
+
+      let enemiesCount = 16;
+      let enemiesSpeed = 5;
+      let enemies = Array.new(enemiesCount);
+      let i = 0;
+      while (i < enemiesCount)
+      {
+         let enemies[i] = EnemyZombie.new(16, 16);
+         let currentEnemy = enemies[i];
+         do currentEnemy.die();
+
+         let i = i + 1;
+      }
+      let road = Road.new();
+      let roadSpeed = 5;
+      let enemySpawnYCoords = Array.new(4);
+      let enemySpawnYCoords[0] = 16;
+      let enemySpawnYCoords[1] = 80;
+      let enemySpawnYCoords[2] = 144;
+      let enemySpawnYCoords[3] = 208;
+      let score = 0;
+      let k = 0;
+
+      return this;
+   }
+
+   method void run()
+   {
+      var int randomSeed;
+      var char key;
+
+      let randomSeed = handleStartGame();
+      let random = Random.new(randomSeed);
+
+      let enemiesAcceleration = interface.getDifficulty() + 1;
+      let enemySpawnRate = 15 - interface.getDifficulty();
+
+      do handleGameProcess();
+
+      do Screen.clearScreen();
+      do interface.drawFinalWindow(score, k);
+      do handleEndGame();
+
+      return;
+   }
+
+   method void handleGameProcess()
+   {
+      var char key;
+      var int tick, frame, deadCarsCount;
+
+      let isRunning = true;
+      let tick = 0;
+      let frame = 0;
+
+      while (isRunning)
+      {
+         let key = Keyboard.keyPressed();
+
+         if (tick = 4000)
+         {
+            if (key = 140) { let isRunning = false; }
+            if (key = 131) { do player.move(0, -15); }
+            if (key = 133) { do player.move(0, 15); }
+
+            do moveEnemies();
+            do road.moveMarking(roadSpeed);
+
+            let deadCarsCount = handleCarsDeaths();
+            let score = score + deadCarsCount;
+            do handleSpeedIncreasing(deadCarsCount);
+
+            do drawFrame();
+
+            let tick = 0;
+            let frame = frame + 1;
+         }
+
+         if (frame = enemySpawnRate)
+         {
+            do trySpawnEnemy();
+            let frame = 0;
+         }
+
+         let tick = tick + 1;
+      }
+
+      return;
+   }
+
+   method void handleSpeedIncreasing(int deadCarsCount)
+   {
+      if (deadCarsCount > 0)
+      {
+         if ((Utils.mod(score, 5) = 0) & (score > 0))
+         {
+            let roadSpeed = roadSpeed + enemiesAcceleration;
+            let enemiesSpeed = enemiesSpeed + enemiesAcceleration;
+         }
+      }
+
+      return;
+   }
+
+   method int handleStartGame()
+   {
+      var char key;
+      let key = Keyboard.keyPressed();
+      do interface.drawWelcomeWindow();
+      return handleDifficultyChoosing(key);
+   }
+
+   method int handleDifficultyChoosing(char key)
+   {
+      var int randomSeed;
+
+      while (~(key = 128))
+      {
+         let key = Keyboard.keyPressed();
+         let randomSeed = Utils.mod(randomSeed + 1, 32767);
+
+         if ((key = 131) | (key = 133))
+         {
+            do handleChangingDifficulty(key);
+         }
+      }
+      return randomSeed;
+   }
+
+   method void handleChangingDifficulty(char key)
+   {
+      do Screen.clearScreen();
+
+      if (key = 131) { do interface.moveDifficultyPointer(-1); }
+      if (key = 133) { do interface.moveDifficultyPointer(1); }
+
+      do interface.drawWelcomeWindow();
+      do Sys.wait(200);
+
+      return;
+   }
+
+   method void handleEndGame()
+   {
+      while (~(Keyboard.keyPressed() = 128)) { }
+      return;
+   }
+
+   method void drawFrame()
+   {
+      do Screen.clearScreen();
+      do road.drawMarking();
+      do player.draw();
+      do drawEnemies();
+      do interface.drawPlayerScore(score);
+
+      return;
+   }
+
+   method int handleCarsDeaths()
+   {
+      var EnemyZombie currentEnemy;
+      var int i, deadCarsCount;
+
+      let i = 0;
+      while (i < enemiesCount)
+      {
+         let currentEnemy = enemies[i];
+
+         if (currentEnemy.isAlive())
+         {
+            if (~(currentEnemy.onScreen()))
+            {
+               let deadCarsCount = deadCarsCount - 1;
+               do currentEnemy.die();
+            }
+
+            if (conflictHappened(currentEnemy.GetX(), currentEnemy.GetY(), player.GetX(), player.GetY()))
+            {
+               if (~(Keyboard.keyPressed() = 32))
+               {
+                  let deadCarsCount = deadCarsCount - 1;
+                  do currentEnemy.die();
+               }
+               else
+               {
+                  let deadCarsCount = deadCarsCount + 1;
+                  do currentEnemy.die();
+               }
+            }
+
+            if (score = 1) { let isRunning = false; }
+            if (score = -2)
+            {
+               let isRunning = false;
+               let k = 1;
+            }
+         }
+
+         let i = i + 1;
+      }
+
+      return deadCarsCount;
+   }
+
+   method void moveEnemies()
+   {
+      var EnemyZombie currentEnemy;
+      var int i;
+
+      let i = 0;
+      while (i < enemiesCount)
+      {
+         let currentEnemy = enemies[i];
+
+         if (currentEnemy.isAlive())
+         {
+            do currentEnemy.move(enemiesSpeed, 0);
+         }
+
+         let i = i + 1;
+      }
+
+      return;
+   }
+
+   method void drawEnemies()
+   {
+      var EnemyZombie currentEnemy;
+      var int i;
+
+      let i = 0;
+      while (i < enemiesCount)
+      {
+         let currentEnemy = enemies[i];
+
+         if (currentEnemy.isAlive())
+         {
+            do currentEnemy.draw();
+         }
+
+         let i = i + 1;
+      }
+
+      return;
+   }
+
+   method void trySpawnEnemy()
+   {
+      var EnemyZombie newEnemy, currentEnemy;
+      var int case, i;
+
+      let case = random.next(5);
+      if (case < 4)
+      {
+         let i = 0;
+         let currentEnemy = enemies[i];
+         while ((i < (enemiesCount-1)) & (currentEnemy.isAlive()))
+         {
+            let i = i + 1;
+            let currentEnemy = enemies[i];
+         }
+
+         if (~(currentEnemy.isAlive()))
+         {
+            do currentEnemy.reborn(0, enemySpawnYCoords[case]);
+         }
+      }
+
+      return;
+   }
+
+   method boolean conflictHappened(int xEnemy, int yEnemy, int xPlayer, int yPlayer)
+   {
+      var int leftEnemyX, topLeftEnemyY, bottomLeftEnemyY;
+      var int rightPlayerX, topRightPlayerY, bottomRightPlayerY;
+
+      var boolean isConflictFromBelow, isConflictFromAbove;
+
+      let leftEnemyX = xEnemy + 47;
+      let topLeftEnemyY = yEnemy;
+      let bottomLeftEnemyY = yEnemy + 31;
+
+      let rightPlayerX = xPlayer;
+      let topRightPlayerY = yPlayer;
+      let bottomRightPlayerY = yPlayer + 31;
+
+      let isConflictFromBelow = (~(topRightPlayerY > bottomLeftEnemyY)) & (~(topRightPlayerY < topLeftEnemyY)) & (~(rightPlayerX > leftEnemyX));
+      let isConflictFromAbove = (~(bottomRightPlayerY > bottomLeftEnemyY)) & (~(bottomRightPlayerY < topLeftEnemyY)) & (~(rightPlayerX > leftEnemyX));
+
+      return isConflictFromBelow | isConflictFromAbove;
+   }
+
+   method void dispose()
+   {
+      do player.dispose();
+      do Memory.deAlloc(enemies);
+      do Memory.deAlloc(enemySpawnYCoords);
+      do road.dispose();
+      do random.dispose();
+      do interface.dispose();
+      do Memory.deAlloc(this);
+
+      return;
+   }
+}

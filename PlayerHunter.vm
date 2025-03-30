@@ -1,4 +1,4 @@
-function PlayerCar.new 0
+function PlayerHunter.new 0
 push constant 7
 call Memory.alloc 1
 pop pointer 0
@@ -22,19 +22,19 @@ push constant 4
 pop this 6
 push pointer 0
 return
-function PlayerCar.GetX 0
+function PlayerHunter.GetX 0
 push argument 0
 pop pointer 0
 push constant 16
 push this 0
 call Math.multiply 2
 return
-function PlayerCar.GetY 0
+function PlayerHunter.GetY 0
 push argument 0
 pop pointer 0
 push this 1
 return
-function PlayerCar.dispose 0
+function PlayerHunter.dispose 0
 push argument 0
 pop pointer 0
 push pointer 0
@@ -42,7 +42,7 @@ call Memory.deAlloc 1
 pop temp 0
 push constant 0
 return
-function PlayerCar.drawCross 0
+function PlayerHunter.drawCross 0
 push argument 0
 pop pointer 0
 push this 4
@@ -75,7 +75,7 @@ call Utils.drawRectangleByOffset 6
 pop temp 0
 push constant 0
 return
-function PlayerCar.draw 0
+function PlayerHunter.draw 0
 push argument 0
 pop pointer 0
 push this 1
@@ -83,7 +83,7 @@ push constant 10
 add
 pop this 5
 push pointer 0
-call PlayerCar.drawCross 1
+call PlayerHunter.drawCross 1
 pop temp 0
 push constant 420
 push constant 3
@@ -179,7 +179,7 @@ call Utils.drawRectangleByOffset 6
 pop temp 0
 push constant 0
 return
-function PlayerCar.move 0
+function PlayerHunter.move 0
 push argument 0
 pop pointer 0
 push constant 1

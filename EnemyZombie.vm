@@ -1,4 +1,4 @@
-function EnemyCar.new 0
+function EnemyZombie.new 0
 push constant 5
 call Memory.alloc 1
 pop pointer 0
@@ -9,11 +9,11 @@ pop this 3
 push pointer 0
 push argument 0
 push argument 1
-call EnemyCar.reborn 3
+call EnemyZombie.reborn 3
 pop temp 0
 push pointer 0
 return
-function EnemyCar.onScreen 0
+function EnemyZombie.onScreen 0
 push argument 0
 pop pointer 0
 push constant 1
@@ -36,22 +36,22 @@ lt
 and
 and
 return
-function EnemyCar.GetX 0
+function EnemyZombie.GetX 0
 push argument 0
 pop pointer 0
 push this 0
 return
-function EnemyCar.GetY 0
+function EnemyZombie.GetY 0
 push argument 0
 pop pointer 0
 push this 1
 return
-function EnemyCar.isAlive 0
+function EnemyZombie.isAlive 0
 push argument 0
 pop pointer 0
 push this 4
 return
-function EnemyCar.reborn 0
+function EnemyZombie.reborn 0
 push argument 0
 pop pointer 0
 push constant 0
@@ -63,7 +63,7 @@ push argument 2
 pop this 1
 push constant 0
 return
-function EnemyCar.die 0
+function EnemyZombie.die 0
 push argument 0
 pop pointer 0
 push constant 0
@@ -74,7 +74,7 @@ push constant 0
 pop this 4
 push constant 0
 return
-function EnemyCar.dispose 0
+function EnemyZombie.dispose 0
 push argument 0
 pop pointer 0
 push pointer 0
@@ -82,7 +82,7 @@ call Memory.deAlloc 1
 pop temp 0
 push constant 0
 return
-function EnemyCar.draw 0
+function EnemyZombie.draw 0
 push argument 0
 pop pointer 0
 push constant 0
@@ -136,7 +136,7 @@ call Utils.drawRectangleByOffset 6
 pop temp 0
 push constant 0
 return
-function EnemyCar.move 0
+function EnemyZombie.move 0
 push argument 0
 pop pointer 0
 push this 1

@@ -1,4 +1,4 @@
-function RaceGame.new 2
+function ZombieGame.new 2
 push constant 14
 call Memory.alloc 1
 pop pointer 0
@@ -6,7 +6,7 @@ call Interface.new 0
 pop this 13
 push constant 26
 push constant 96
-call PlayerCar.new 2
+call PlayerHunter.new 2
 pop this 8
 push constant 16
 pop this 1
@@ -28,7 +28,7 @@ push this 9
 add
 push constant 16
 push constant 16
-call EnemyCar.new 2
+call EnemyZombie.new 2
 pop temp 0
 pop pointer 1
 push temp 0
@@ -40,7 +40,7 @@ pop pointer 1
 push that 0
 pop local 0
 push local 0
-call EnemyCar.die 1
+call EnemyZombie.die 1
 pop temp 0
 push local 1
 push constant 1
@@ -93,11 +93,11 @@ push constant 0
 pop this 7
 push pointer 0
 return
-function RaceGame.run 2
+function ZombieGame.run 2
 push argument 0
 pop pointer 0
 push pointer 0
-call RaceGame.handleStartGame 1
+call ZombieGame.handleStartGame 1
 pop local 0
 push local 0
 call Random.new 1
@@ -113,7 +113,7 @@ call Interface.getDifficulty 1
 sub
 pop this 2
 push pointer 0
-call RaceGame.handleGameProcess 1
+call ZombieGame.handleGameProcess 1
 pop temp 0
 call Screen.clearScreen 0
 pop temp 0
@@ -123,11 +123,11 @@ push this 7
 call Interface.drawFinalWindow 3
 pop temp 0
 push pointer 0
-call RaceGame.handleEndGame 1
+call ZombieGame.handleEndGame 1
 pop temp 0
 push constant 0
 return
-function RaceGame.handleGameProcess 4
+function ZombieGame.handleGameProcess 4
 push argument 0
 pop pointer 0
 push constant 0
@@ -168,7 +168,7 @@ push this 8
 push constant 0
 push constant 15
 neg
-call PlayerCar.move 3
+call PlayerHunter.move 3
 pop temp 0
 label IF_FALSE2
 push local 0
@@ -180,18 +180,18 @@ label IF_TRUE3
 push this 8
 push constant 0
 push constant 15
-call PlayerCar.move 3
+call PlayerHunter.move 3
 pop temp 0
 label IF_FALSE3
 push pointer 0
-call RaceGame.moveEnemies 1
+call ZombieGame.moveEnemies 1
 pop temp 0
 push this 11
 push this 4
 call Road.moveMarking 2
 pop temp 0
 push pointer 0
-call RaceGame.handleCarsDeaths 1
+call ZombieGame.handleCarsDeaths 1
 pop local 3
 push this 3
 push local 3
@@ -199,10 +199,10 @@ add
 pop this 3
 push pointer 0
 push local 3
-call RaceGame.handleSpeedIncreasing 2
+call ZombieGame.handleSpeedIncreasing 2
 pop temp 0
 push pointer 0
-call RaceGame.drawFrame 1
+call ZombieGame.drawFrame 1
 pop temp 0
 push constant 0
 pop local 1
@@ -218,7 +218,7 @@ if-goto IF_TRUE4
 goto IF_FALSE4
 label IF_TRUE4
 push pointer 0
-call RaceGame.trySpawnEnemy 1
+call ZombieGame.trySpawnEnemy 1
 pop temp 0
 push constant 0
 pop local 2
@@ -231,7 +231,7 @@ goto WHILE_EXP0
 label WHILE_END0
 push constant 0
 return
-function RaceGame.handleSpeedIncreasing 0
+function ZombieGame.handleSpeedIncreasing 0
 push argument 0
 pop pointer 0
 push argument 1
@@ -264,7 +264,7 @@ label IF_FALSE1
 label IF_FALSE0
 push constant 0
 return
-function RaceGame.handleStartGame 1
+function ZombieGame.handleStartGame 1
 push argument 0
 pop pointer 0
 call Keyboard.keyPressed 0
@@ -274,9 +274,9 @@ call Interface.drawWelcomeWindow 1
 pop temp 0
 push pointer 0
 push local 0
-call RaceGame.handleDifficultyChoosing 2
+call ZombieGame.handleDifficultyChoosing 2
 return
-function RaceGame.handleDifficultyChoosing 1
+function ZombieGame.handleDifficultyChoosing 1
 push argument 0
 pop pointer 0
 label WHILE_EXP0
@@ -306,14 +306,14 @@ goto IF_FALSE0
 label IF_TRUE0
 push pointer 0
 push argument 1
-call RaceGame.handleChangingDifficulty 2
+call ZombieGame.handleChangingDifficulty 2
 pop temp 0
 label IF_FALSE0
 goto WHILE_EXP0
 label WHILE_END0
 push local 0
 return
-function RaceGame.handleChangingDifficulty 0
+function ZombieGame.handleChangingDifficulty 0
 push argument 0
 pop pointer 0
 call Screen.clearScreen 0
@@ -349,7 +349,7 @@ call Sys.wait 1
 pop temp 0
 push constant 0
 return
-function RaceGame.handleEndGame 0
+function ZombieGame.handleEndGame 0
 push argument 0
 pop pointer 0
 label WHILE_EXP0
@@ -363,7 +363,7 @@ goto WHILE_EXP0
 label WHILE_END0
 push constant 0
 return
-function RaceGame.drawFrame 0
+function ZombieGame.drawFrame 0
 push argument 0
 pop pointer 0
 call Screen.clearScreen 0
@@ -372,10 +372,10 @@ push this 11
 call Road.drawMarking 1
 pop temp 0
 push this 8
-call PlayerCar.draw 1
+call PlayerHunter.draw 1
 pop temp 0
 push pointer 0
-call RaceGame.drawEnemies 1
+call ZombieGame.drawEnemies 1
 pop temp 0
 push this 13
 push this 3
@@ -383,7 +383,7 @@ call Interface.drawPlayerScore 2
 pop temp 0
 push constant 0
 return
-function RaceGame.handleCarsDeaths 3
+function ZombieGame.handleCarsDeaths 3
 push argument 0
 pop pointer 0
 push constant 0
@@ -401,12 +401,12 @@ pop pointer 1
 push that 0
 pop local 0
 push local 0
-call EnemyCar.isAlive 1
+call EnemyZombie.isAlive 1
 if-goto IF_TRUE0
 goto IF_FALSE0
 label IF_TRUE0
 push local 0
-call EnemyCar.onScreen 1
+call EnemyZombie.onScreen 1
 not
 if-goto IF_TRUE1
 goto IF_FALSE1
@@ -416,19 +416,19 @@ push constant 1
 sub
 pop local 2
 push local 0
-call EnemyCar.die 1
+call EnemyZombie.die 1
 pop temp 0
 label IF_FALSE1
 push pointer 0
 push local 0
-call EnemyCar.GetX 1
+call EnemyZombie.GetX 1
 push local 0
-call EnemyCar.GetY 1
+call EnemyZombie.GetY 1
 push this 8
-call PlayerCar.GetX 1
+call PlayerHunter.GetX 1
 push this 8
-call PlayerCar.GetY 1
-call RaceGame.conflictHappened 5
+call PlayerHunter.GetY 1
+call ZombieGame.conflictHappened 5
 if-goto IF_TRUE2
 goto IF_FALSE2
 label IF_TRUE2
@@ -444,7 +444,7 @@ push constant 1
 sub
 pop local 2
 push local 0
-call EnemyCar.die 1
+call EnemyZombie.die 1
 pop temp 0
 goto IF_END3
 label IF_FALSE3
@@ -453,7 +453,7 @@ push constant 1
 add
 pop local 2
 push local 0
-call EnemyCar.die 1
+call EnemyZombie.die 1
 pop temp 0
 label IF_END3
 label IF_FALSE2
@@ -487,7 +487,7 @@ goto WHILE_EXP0
 label WHILE_END0
 push local 2
 return
-function RaceGame.moveEnemies 2
+function ZombieGame.moveEnemies 2
 push argument 0
 pop pointer 0
 push constant 0
@@ -505,14 +505,14 @@ pop pointer 1
 push that 0
 pop local 0
 push local 0
-call EnemyCar.isAlive 1
+call EnemyZombie.isAlive 1
 if-goto IF_TRUE0
 goto IF_FALSE0
 label IF_TRUE0
 push local 0
 push this 5
 push constant 0
-call EnemyCar.move 3
+call EnemyZombie.move 3
 pop temp 0
 label IF_FALSE0
 push local 1
@@ -523,7 +523,7 @@ goto WHILE_EXP0
 label WHILE_END0
 push constant 0
 return
-function RaceGame.drawEnemies 2
+function ZombieGame.drawEnemies 2
 push argument 0
 pop pointer 0
 push constant 0
@@ -541,12 +541,12 @@ pop pointer 1
 push that 0
 pop local 0
 push local 0
-call EnemyCar.isAlive 1
+call EnemyZombie.isAlive 1
 if-goto IF_TRUE0
 goto IF_FALSE0
 label IF_TRUE0
 push local 0
-call EnemyCar.draw 1
+call EnemyZombie.draw 1
 pop temp 0
 label IF_FALSE0
 push local 1
@@ -557,7 +557,7 @@ goto WHILE_EXP0
 label WHILE_END0
 push constant 0
 return
-function RaceGame.trySpawnEnemy 4
+function ZombieGame.trySpawnEnemy 4
 push argument 0
 pop pointer 0
 push this 12
@@ -585,7 +585,7 @@ push constant 1
 sub
 lt
 push local 1
-call EnemyCar.isAlive 1
+call EnemyZombie.isAlive 1
 and
 not
 if-goto WHILE_END0
@@ -602,7 +602,7 @@ pop local 1
 goto WHILE_EXP0
 label WHILE_END0
 push local 1
-call EnemyCar.isAlive 1
+call EnemyZombie.isAlive 1
 not
 if-goto IF_TRUE1
 goto IF_FALSE1
@@ -614,13 +614,13 @@ push this 10
 add
 pop pointer 1
 push that 0
-call EnemyCar.reborn 3
+call EnemyZombie.reborn 3
 pop temp 0
 label IF_FALSE1
 label IF_FALSE0
 push constant 0
 return
-function RaceGame.conflictHappened 8
+function ZombieGame.conflictHappened 8
 push argument 0
 pop pointer 0
 push argument 1
@@ -675,11 +675,11 @@ push local 6
 push local 7
 or
 return
-function RaceGame.dispose 0
+function ZombieGame.dispose 0
 push argument 0
 pop pointer 0
 push this 8
-call PlayerCar.dispose 1
+call PlayerHunter.dispose 1
 pop temp 0
 push this 9
 call Memory.deAlloc 1

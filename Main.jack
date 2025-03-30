@@ -2,13 +2,13 @@ class Main
 {
    function void main()
    {
-      var RaceGame game;
+      var ZombieGame game;
 
       while (true)
       {
          do Screen.clearScreen();
          do Sys.wait(250);
-         let game = RaceGame.new();
+         let game = ZombieGame.new();
          do game.run();
          do game.dispose();
       }
