@@ -32,7 +32,6 @@ class Road {
         do Screen.drawLine(495, 32, 495, 45);
         do Screen.drawLine(500, 32, 500, 45);
         do Screen.drawLine(505, 32, 505, 45);
-
         return;
     }
     

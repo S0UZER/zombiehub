@@ -210,8 +210,8 @@ class ZombieGame
                }
             }
 
-            if (score = 1) { let isRunning = false; }
-            if (score = -2)
+            if (score = 10) { let isRunning = false; }
+            if (score = -10)
             {
                let isRunning = false;
                let k = 1;
