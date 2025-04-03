@@ -458,7 +458,7 @@ pop temp 0
 label IF_END3
 label IF_FALSE2
 push this 3
-push constant 1
+push constant 10
 eq
 if-goto IF_TRUE4
 goto IF_FALSE4
@@ -467,7 +467,7 @@ push constant 0
 pop this 0
 label IF_FALSE4
 push this 3
-push constant 2
+push constant 10
 neg
 eq
 if-goto IF_TRUE5
